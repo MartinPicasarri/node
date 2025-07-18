@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require('express');
-const { PrismaClient } = require('./generated/prisma');
+const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -28,14 +28,14 @@ console.log(PORT);
 app.get('/', (req, res) => {
   res.send(`
       <h1>Curso Express.js V3</h1>
-      <p>Esto es una aplicaciÃ³n node.js con express.js</p>
+      <p>Esto es una aplicación node.js con express.js</p>
       <p>Corre en el puerto: ${PORT}</p>
     `);
 });
 
 app.get('/users/:id', (req, res) => {
   const userId = req.params.id;
-  res.send(`Mostrar informaciÃ³n del usuario con ID: ${userId}`);
+  res.send(`Mostrar información del usuario con ID: ${userId}`);
 });
 
 app.get('/search', (req, res) => {
@@ -44,13 +44,13 @@ app.get('/search', (req, res) => {
 
   res.send(`
       <h2>Resultados de Busqueda:</h2>
-      <p>TÃ©rmino: ${terms}</p>
-      <p>CategorÃ­a: ${category}</p>
+      <p>Término: ${terms}</p>
+      <p>Categoría: ${category}</p>
     `);
 });
 
 app.post('/form', (req, res) => {
-  const name = req.body.nombre || 'AnÃ³nimo';
+  const name = req.body.nombre || 'Anónimo';
   const email = req.body.email || 'No proporcionado';
   res.json({
     message: 'Datos recibidos',
@@ -77,7 +77,7 @@ app.post('/api/data', (req, res) => {
 app.get('/users', (req, res) => {
   fs.readFile(usersFilePath, 'utf-8', (err, data) => {
     if (err) {
-      return res.status(500).json({ error: 'Error con conexiÃ³n de datos.' });
+      return res.status(500).json({ error: 'Error con conexión de datos.' });
     }
     const users = JSON.parse(data);
     res.json(users);
@@ -88,7 +88,7 @@ app.post('/users', (req, res) => {
   const newUser = req.body;
   fs.readFile(usersFilePath, 'utf-8', (err, data) => {
     if (err) {
-      return res.status(500).json({ error: 'Error con conexiÃ³n de datos.' });
+      return res.status(500).json({ error: 'Error con conexión de datos.' });
     }
     const users = JSON.parse(data);
 
@@ -113,7 +113,7 @@ app.put('/users/:id', (req, res) => {
 
   fs.readFile(usersFilePath, 'utf8', (err, data) => {
     if (err) {
-      return res.status(500).json({ error: 'Error con conexiÃ³n de datos.' });
+      return res.status(500).json({ error: 'Error con conexión de datos.' });
     }
     let users = JSON.parse(data);
 
@@ -140,7 +140,7 @@ app.delete('/users/:id', (req, res) => {
   const userId = parseInt(req.params.id, 10);
   fs.readFile(usersFilePath, 'utf8', (err, data) => {
     if (err) {
-      return res.status(500).json({ error: 'Error con conexiÃ³n de datos.' });
+      return res.status(500).json({ error: 'Error con conexión de datos.' });
     }
     let users = JSON.parse(data);
     users = users.filter(user => user.id !== userId);

@@ -1,44 +1,64 @@
-// Importa PrismaClient desde la ruta donde fue generado
-// La ruta ha sido ajustada a '../generated/prisma' porque seed.js está en la carpeta 'prisma'
-// y 'generated' está en la raíz del proyecto.
-const { PrismaClient } = require('../generated/prisma');
-const prisma = new PrismaClient(); // Inicializa el cliente de Prisma
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
-// Función principal asíncrona para la siembra de datos
 async function main() {
-    /* Define un array de usuarios de demostración
-    const demoUsers = [
-        { name: 'Juan Pérez', email: 'juan.perez@example.com' },
-        { name: 'María López', email: 'maria.lopez@example.com' },
-        { name: 'Carlos García', email: 'carlos.garcia@example.com' }
-    ];
-
-    // Primero, elimina todos los usuarios existentes para evitar duplicados en cada ejecución
-    // Esto es útil para tener un estado limpio cada vez que se ejecuta el seed
-    await prisma.user.deleteMany();
-    console.log('Usuarios existentes eliminados.');
-
-    // Itera sobre el array de usuarios y los crea en la base de datos
-    for (const user of demoUsers) {
-        await prisma.user.create({
-            data: user // Los datos del usuario a crear
-        });
+  // Crear usuarios
+  const user1 = await prisma.user.create({
+    data: {
+      email: 'user1@example.com',
+      password: 'password123',
+      name: 'User One',
+      role: 'USER'
     }
+  });
 
-    console.log('Usuarios de demostración creados con éxito');*/
-    await prisma.user.deleteMany();
+  const user2 = await prisma.user.create({
+    data: {
+      email: 'admin@example.com',
+      password: 'admin123',
+      name: 'Admin User',
+      role: 'ADMIN'
+    }
+  });
+
+  // Crear bloques de tiempo
+  const timeBlock1 = await prisma.timeBlock.create({
+    data: {
+      startTime: new Date('2023-10-01T09:00:00Z'),
+      endTime: new Date('2023-10-01T10:00:00Z')
+    }
+  });
+
+  const timeBlock2 = await prisma.timeBlock.create({
+    data: {
+      startTime: new Date('2023-10-01T10:00:00Z'),
+      endTime: new Date('2023-10-01T11:00:00Z')
+    }
+  });
+
+  // Crear citas
+  await prisma.appointment.create({
+    data: {
+      date: new Date('2023-10-01T09:00:00Z'),
+      user: { connect: { id: user1.id } },
+      timeBlock: { connect: { id: timeBlock1.id } }
+    }
+  });
+
+  await prisma.appointment.create({
+    data: {
+      date: new Date('2023-10-01T10:00:00Z'),
+      user: { connect: { id: user2.id } },
+      timeBlock: { connect: { id: timeBlock2.id } }
+    }
+  });
 }
 
-// Llama a la función principal y maneja posibles errores
 main()
-    .catch(e => {
-        // Si ocurre un error, lo imprime en la consola
-        console.error(e);
-        // Sale del proceso con un código de error
-        process.exit(1);
-    })
-    .finally(async () => {
-        // Asegura que la conexión a la base de datos se cierre al finalizar,
-        // independientemente de si hubo un error o no.
-        await prisma.$disconnect();
-    });
+  .catch(e => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
